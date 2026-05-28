@@ -28,11 +28,12 @@ def find_best_move(grid):
 def solve(grid):
     np_grid = np.array(grid)
     solution = []
-    best_move = find_best_move(np_grid)
-    while best_move is not None:
+    while count_lights_on(np_grid) > 0:
+        best_move = find_best_move(np_grid)
+        if best_move is None:
+            break
         solution.append(best_move)
         update_grid(np_grid, best_move[0], best_move[1])
-        best_move = find_best_move(np_grid)
     return solution
 
 
