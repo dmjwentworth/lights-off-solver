@@ -1,4 +1,3 @@
-import argparse
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from play import Game
@@ -11,14 +10,6 @@ class Jarvis(Game):
         super().__init__(interactive=False, setup=False)
         self.fig, self.ax = plt.subplots()
         self.moves = solve(self.grid)
-        self.anim = FuncAnimation(
-            self.fig,
-            self.animate,
-            frames=len(self.moves),
-            init_func=self.init_frame,
-            interval=700,
-            repeat=False
-        )
 
     def init_frame(self):
         self.ax.clear()
@@ -32,13 +23,22 @@ class Jarvis(Game):
         self.ax.imshow(self.grid, cmap='Blues', vmin=0, vmax=1)
         plt.draw()
 
+    def show(self):
+        anim = FuncAnimation(
+            self.fig,
+            self.animate,
+            frames=len(self.moves),
+            init_func=self.init_frame,
+            interval=700,
+            repeat=False
+        )
+        plt.show()
 
-def main(args):
+
+def main():
     jarvis = Jarvis()
-    plt.show()
+    jarvis.show()
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Lights Off Game')
-    args = parser.parse_args()
-    main(args)
+    main()
