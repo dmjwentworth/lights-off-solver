@@ -1,3 +1,6 @@
+"""
+Lights Off Game (simple interactive version)
+"""
 import json
 import argparse
 import tkinter as tk
@@ -80,3 +83,4 @@ if __name__ == '__main__':
     parser.add_argument('--setup', action='store_true', help='Set up the grid configuration')
     args = parser.parse_args()
     main(args)
+    
