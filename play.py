@@ -43,6 +43,10 @@ class Game:
                 bg='black'
             )
             self.count_label.grid(row=5, column=0, columnspan=5, pady=10)
+            self.root.mainloop()
+            if self.setup:
+                with open('grid.json', 'w') as f:
+                    json.dump(self.grid, f)
 
     def make_buttons(self):
         buttons = []
@@ -65,7 +69,7 @@ class Game:
         return buttons
     
     def update_buttons(self):
-        # Update the button colors based on the new grid state
+        # Update the button colours based on the new grid state
         for x in range(5):
             for y in range(5):
                 self.buttons[x][y].config(
@@ -80,17 +84,9 @@ class Game:
             self.update_buttons()
             self.count_label.config(text=f'Moves: {self.count}')
 
-    def run(self):
-        if self.interactive:
-            self.root.mainloop()
-            if self.setup:
-                with open('grid.json', 'w') as f:
-                    json.dump(self.grid, f)
-
 
 def main(args):
     game = Game(interactive=True, setup=args.setup)
-    game.run()
 
 
 if __name__ == '__main__':
