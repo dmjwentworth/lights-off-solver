@@ -1,40 +1,39 @@
 import numpy as np
+from tqdm import tqdm
+from itertools import combinations
 from play import update_grid
 
-
-def count_lights_on(grid):
-    np_grid = np.array(grid)
-    return np.sum(np_grid)
+solved = np.zeros((5, 5), dtype=int)
 
 
-def find_best_move(grid):
-    candidates = []
-    lights_on = []
-    lights_on_initial = count_lights_on(grid)
-    for i in range(5):
-        for j in range(5):
-            np_grid = np.array(grid)
-            update_grid(np_grid, i, j)
-            count = count_lights_on(np_grid)
-            if count < lights_on_initial:
-                candidates.append((i, j))
-                lights_on.append(count)
-    if not candidates:
-        return None
-    best_index = np.argmin(lights_on)
-    return candidates[best_index]
+def int_to_pos(num):
+    return num // 5, num % 5
+
+
+def check_games_of_N_moves(grid, N):
+    for moves in tqdm(combinations(range(25), N)):
+        np_grid = np.array(grid, dtype=int)
+        for move in moves:
+            x, y = int_to_pos(move)
+            update_grid(np_grid, x, y)
+        
+        if np.array_equal(np_grid, solved):
+            print(f"\nFound a solution with {N} moves: {moves}")
+            return moves
+    
+    print(f"No solution found with {N} moves.")
+    return None
 
 
 def solve(grid):
-    np_grid = np.array(grid)
-    solution = []
-    while count_lights_on(np_grid) > 0:
-        best_move = find_best_move(np_grid)
-        if best_move is None:
-            break
-        solution.append(best_move)
-        update_grid(np_grid, best_move[0], best_move[1])
-    return solution
+    for N in range(1, 26):
+        print(f"\033[1;34mChecking for solutions with {N} moves...\033[0m")
+        moves = check_games_of_N_moves(grid, N)
+        if moves is not None:
+            moves = [int_to_pos(move) for move in moves]
+            return moves
+    print("No solution found.")
+    return None
 
 
 def main():
@@ -45,10 +44,12 @@ def main():
         [0, 0, 1, 1, 1],
         [0, 0, 0, 1, 0]
     ]
-    solution = solve(grid)
-    print("Solution:")
-    for move in solution:
-        print(f"Toggle ({move[0]}, {move[1]})")
+    
+    moves = solve(grid)
+    if moves is not None:
+        print(f"Solution found:\n{moves}")
+    else:
+        print("No solution found.")
 
 
 if __name__ == '__main__':

@@ -29,7 +29,7 @@ class Jarvis(Game):
             self.animate,
             frames=len(self.moves),
             init_func=self.init_frame,
-            interval=700,
+            interval=1000,
             repeat=False
         )
         plt.show()
