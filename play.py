@@ -70,6 +70,8 @@ class Game:
         update_grid(self.grid, i, j, self.setup)
         self.update_buttons()
         self.count_label.config(text=f'Moves: {self.count}')
+        if self.cheats:
+            self.buttons[i][j].config(fg="red")
 
     def show_solution(self):
         # Get the solution from the solver and display it on the buttons
