@@ -15,6 +15,7 @@ class Game:
         else:
             self.solution, self.grid = generate_random_grid()
             self.setup = False
+        self.grid_copy = [row[:] for row in self.grid]
 
         # Initialise the GUI
         self.count = 0       
@@ -67,14 +68,23 @@ class Game:
                 row.append(button)
             buttons.append(row)
 
-        button = tk.Button(
+        reset_button = tk.Button(
+            self.root,
+            text='Reset',
+            bg='green',
+            fg='white',
+            command=self.reset_game
+        )
+        reset_button.grid(row=7, column=0, columnspan=5, pady=10)
+
+        stuck_button = tk.Button(
             self.root,
             text='I`m stuck',
             bg='red',
             fg='white',
             command=self.show_solution
         )
-        button.grid(row=7, column=0, columnspan=5, pady=10)
+        stuck_button.grid(row=8, column=0, columnspan=5, pady=10)
 
         return buttons
     
@@ -95,8 +105,16 @@ class Game:
         self.update_buttons()
         self.count_label.config(text=f'Moves: {self.count}')
 
+    def reset_game(self):
+        # Reset the game to the initial state
+        self.grid = [row[:] for row in self.grid_copy]
+        self.update_buttons()
+        self.count = 0
+        self.count_label.config(text=f'Moves: {self.count}')
+
     def show_solution(self):
         # Get the solution from the solver and display it on the buttons
+        self.grid_copy = [row[:] for row in self.grid]
         self.setup = False
         if self.solve_mode:
             self.solution = solve(self.grid)

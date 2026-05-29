@@ -1,14 +1,16 @@
-### lights-off-solver
+## lights-off-solver
 
-1) To setup the board you want to solve:
-```
-python play.py --setup
-```
-(close the window once the board looks how you desire)
+Ensure your python environment includes `numpy`, `tqdm`, and `tkinter`!
 
-2) To solve said board:
-```
-python play.py --solve
-```
+___
+#### Solve mode
+___
+1) Run `python play.py --solve`
+2) An empty board will show up, use this to construct the board you wish to solve.
+3) Press "I`m stuck" and the solution will reveal itself (algorithm may take ~30 seconds).
 
-Assuming your python environment includes `numpy`, `tqdm`, and `tkinter`!
+___
+#### Default mode
+___
+1) Run `python play.py`
+2) A randomly generated board will pop up – try to solve it!
