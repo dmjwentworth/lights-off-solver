@@ -1,13 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 from itertools import combinations
-from play import update_grid
-
-solved = np.zeros((5, 5), dtype=int)
-
-
-def int_to_pos(num):
-    return num // 5, num % 5
+from utils import int_to_pos, update_grid, solved
 
 
 def check_games_of_N_moves(grid, N):
@@ -26,12 +20,17 @@ def check_games_of_N_moves(grid, N):
 
 
 def solve(grid):
+    if np.array_equal(np.array(grid, dtype=int), solved):
+        print("The grid is already solved.")
+        return []
+
     for N in range(1, 26):
         print(f"\033[1;34mChecking for solutions with {N} moves...\033[0m")
         moves = check_games_of_N_moves(grid, N)
         if moves is not None:
             moves = [int_to_pos(move) for move in moves]
             return moves
+    
     print("No solution found.")
     return None
 
@@ -54,3 +53,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
