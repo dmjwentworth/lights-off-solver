@@ -4,6 +4,7 @@
 ```
 python play.py --setup
 ```
+(close the window once the board looks how you desire)
 
 2) To solve said board:
 ```
