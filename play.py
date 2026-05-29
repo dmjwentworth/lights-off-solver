@@ -7,7 +7,7 @@ from utils import load_grid, update_grid, colours
 
 class Game:
     def __init__(self, cheats, setup):
-        #
+        # Load the grid from the JSON, set-up the GUI
         self.grid = load_grid()
         self.cheats = cheats
         self.setup = setup
@@ -24,17 +24,18 @@ class Game:
         )
         self.count_label.grid(row=5, column=0, columnspan=5, pady=10)
 
-        #
+        # If cheats are enabled, show the solution on the buttons
         if self.cheats:
             self.show_solution()
 
-        #
+        # Start the GUI event loop
         self.root.mainloop()       
         if self.setup:
             with open('grid.json', 'w') as f:
                 json.dump(self.grid, f)
 
     def make_buttons(self):
+        # Create a 5x5 grid of buttons based on the current grid state
         buttons = []
         
         for i in range(5):
@@ -64,12 +65,14 @@ class Game:
                 )
 
     def toggle_button(self, i, j):
+        # Toggle the button at (i, j) and update the grid and button states
         self.count += 1
         update_grid(self.grid, i, j, self.setup)
         self.update_buttons()
         self.count_label.config(text=f'Moves: {self.count}')
 
     def show_solution(self):
+        # Get the solution from the solver and display it on the buttons
         solution = solve(self.grid)
         for move in solution:
             self.buttons[move[0]][move[1]].config(text='Press')
