@@ -10,7 +10,7 @@ class Game:
         # Initialise the game state
         self.solve_mode = solve_mode
         if self.solve_mode:
-            self.grid = solved
+            self.grid = [row[:] for row in solved]
             self.setup = True
         else:
             self.solution, self.grid = generate_random_grid()
@@ -88,7 +88,7 @@ class Game:
 
         return buttons
     
-    def update_buttons(self):
+    def update_button_colours(self):
         # Update the button colours based on the new grid state
         for x in range(5):
             for y in range(5):
@@ -97,30 +97,60 @@ class Game:
                     activebackground=colours[self.grid[x][y]]
                 )
 
+    def clear_button_texts(self):
+        # Clear the button labels
+        for x in range(5):
+            for y in range(5):
+                self.buttons[x][y].config(text='')
+
     def toggle_button(self, i, j):
         # Toggle the button at (i, j) and update the grid and button states
         if not self.setup:
             self.count += 1
         update_grid(self.grid, i, j, self.setup)
-        self.update_buttons()
+        self.update_button_colours()
         self.count_label.config(text=f'Moves: {self.count}')
+        if not self.setup and (self.grid == solved):
+            self.root.after(200, self.go_green)
+            self.root.after(1000, self.new_game)
 
     def reset_game(self):
         # Reset the game to the initial state
         self.grid = [row[:] for row in self.grid_copy]
-        self.update_buttons()
+        self.update_button_colours()
         self.count = 0
         self.count_label.config(text=f'Moves: {self.count}')
 
     def show_solution(self):
         # Get the solution from the solver and display it on the buttons
-        self.grid_copy = [row[:] for row in self.grid]
         self.setup = False
         if self.solve_mode:
+            self.grid_copy = [row[:] for row in self.grid]
             self.solution = solve(self.grid)
         for move in self.solution:
             self.buttons[move[0]][move[1]].config(text='Press')
 
+    def new_game(self):
+        if not self.solve_mode:
+            self.solution, self.grid = generate_random_grid()
+            self.setup = False
+        else:
+            self.grid = [row[:] for row in solved]
+            self.setup = True
+        self.grid_copy = [row[:] for row in self.grid]
+        
+        self.update_button_colours()
+        self.clear_button_texts()
+        self.count = 0
+        self.count_label.config(text=f'Moves: {self.count}')
+        self.streak += 1
+        self.streak_label.config(text=f'Current Streak: {self.streak}')
+
+    def go_green(self):
+        # Make the buttons green when the game is solved
+        for x in range(5):
+            for y in range(5):
+                self.buttons[x][y].config(bg='green', activebackground='green')
 
 def main(args):
     game = Game(solve_mode=args.solve)
