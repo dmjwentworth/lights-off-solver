@@ -152,6 +152,7 @@ class Game:
             for y in range(5):
                 self.buttons[x][y].config(bg='green', activebackground='green')
 
+
 def main(args):
     game = Game(solve_mode=args.solve)
 
