@@ -2,37 +2,51 @@ import json
 import argparse
 import tkinter as tk
 from solver import solve
-from utils import load_grid, update_grid, colours
+from utils import generate_random_grid, update_grid, colours, solved
 
 
 class Game:
-    def __init__(self, cheats, setup):
-        # Load the grid from the JSON, set-up the GUI
-        self.grid = load_grid()
-        self.cheats = cheats
-        self.setup = setup
-        self.count = 0        
+    def __init__(self, solve_mode):
+        # Initialise the game state
+        self.solve_mode = solve_mode
+        if self.solve_mode:
+            self.grid = solved
+            self.setup = True
+        else:
+            self.solution, self.grid = generate_random_grid()
+            self.setup = False
+
+        # Initialise the GUI
+        self.count = 0       
+        self.streak = 0 
         self.root = tk.Tk()
         self.root.title('Lights Off')
         self.root.config(bg='black')
         self.buttons = self.make_buttons()
-        self.count_label = tk.Label(
-            self.root,
-            text=f'Moves: {self.count}',
-            fg='white',
-            bg='black'
-        )
-        self.count_label.grid(row=5, column=0, columnspan=5, pady=10)
-
-        # If cheats are enabled, show the solution on the buttons
-        if self.cheats:
-            self.show_solution()
+        self.count_label, self.streak_label = self.make_labels()
 
         # Start the GUI event loop
         self.root.mainloop()       
-        if self.setup:
-            with open('grid.json', 'w') as f:
-                json.dump(self.grid, f)
+
+    def make_labels(self):
+        # Create labels for move count and current streak
+        count_label = tk.Label(
+            self.root,
+            text=f'Moves: 0',
+            fg='white',
+            bg='black'
+        )
+        count_label.grid(row=5, column=0, columnspan=5, pady=10)
+
+        streak_label = tk.Label(
+            self.root,
+            text=f'Current Streak: 0',
+            fg='white',
+            bg='black'
+        )
+        streak_label.grid(row=6, column=0, columnspan=5, pady=10)
+
+        return count_label, streak_label
 
     def make_buttons(self):
         # Create a 5x5 grid of buttons based on the current grid state
@@ -53,6 +67,15 @@ class Game:
                 row.append(button)
             buttons.append(row)
 
+        button = tk.Button(
+            self.root,
+            text='I`m stuck',
+            bg='red',
+            fg='white',
+            command=self.show_solution
+        )
+        button.grid(row=7, column=0, columnspan=5, pady=10)
+
         return buttons
     
     def update_buttons(self):
@@ -66,36 +89,32 @@ class Game:
 
     def toggle_button(self, i, j):
         # Toggle the button at (i, j) and update the grid and button states
-        self.count += 1
+        if not self.setup:
+            self.count += 1
         update_grid(self.grid, i, j, self.setup)
         self.update_buttons()
         self.count_label.config(text=f'Moves: {self.count}')
-        if self.cheats:
-            self.buttons[i][j].config(fg="red")
 
     def show_solution(self):
         # Get the solution from the solver and display it on the buttons
-        solution = solve(self.grid)
-        for move in solution:
+        self.setup = False
+        if self.solve_mode:
+            self.solution = solve(self.grid)
+        for move in self.solution:
             self.buttons[move[0]][move[1]].config(text='Press')
 
 
 def main(args):
-    if args.solve:
-        game = Game(cheats=True, setup=False)
-    else:
-        game = Game(cheats=False, setup=args.setup)
+    game = Game(solve_mode=args.solve)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Lights Off Game')
     parser.add_argument(
-        '--setup', action='store_true', help='Set up the grid configuration'
-    )
-    parser.add_argument(
-        '--solve', action='store_true', help='Solve the grid configuration'
+        '--solve',
+        action='store_true',
+        help='Solve the grid configuration',
     )
     args = parser.parse_args()
     main(args)
 
-    
